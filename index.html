@@ -1,12 +1,104 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>CardFlip AI</title>
-  </head>
-  <body style="text-align:center; padding-top:50px; font-family:sans-serif;">
-    <h1>🔥 CardFlip AI 🔥</h1>
-    <p>This is your deployed site — time to build your app!</p>
-  </body>
-</html>
+import React, { useState } from "react";
+import { v4 as uuidv4 } from "uuid";
+
+export default function CardFlipApp() {
+  const [cards, setCards] = useState([]);
+  const [image, setImage] = useState(null);
+  const [preview, setPreview] = useState(null);
+  const [folder, setFolder] = useState("Default Folder");
+  const [scanning, setScanning] = useState(false);
+
+  const handleUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImage(file);
+      setPreview(URL.createObjectURL(file));
+    }
+  };
+
+  const handleScan = () => {
+    if (!image) return;
+    setScanning(true);
+    setTimeout(() => {
+      const newCard = {
+        id: uuidv4(),
+        folder,
+        image: preview,
+        player: "Josh Allen",
+        year: "2021",
+        brand: "Select",
+        value: "$45"
+      };
+      setCards([...cards, newCard]);
+      setImage(null);
+      setPreview(null);
+      setScanning(false);
+    }, 1500);
+  };
+
+  const folders = [...new Set(cards.map((card) => card.folder))];
+
+  return (
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-3xl mx-auto bg-white rounded-2xl p-6 shadow-xl">
+        <h1 className="text-2xl font-bold mb-4 text-center">CardFlip AI MVP</h1>
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleUpload}
+          className="mb-4"
+        />
+        <input
+          type="text"
+          value={folder}
+          onChange={(e) => setFolder(e.target.value)}
+          placeholder="Folder name"
+          className="p-2 border mb-4 w-full"
+        />
+        {preview && (
+          <div className="mb-4 text-center">
+            <img src={preview} alt="Preview" className="max-h-64 mx-auto" />
+          </div>
+        )}
+        <button
+          onClick={handleScan}
+          disabled={scanning || !image}
+          className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50"
+        >
+          {scanning ? "Scanning..." : "Scan & Add to Folder"}
+        </button>
+      </div>
+
+      <div className="max-w-4xl mx-auto mt-10">
+        {folders.map((f) => (
+          <div key={f} className="mb-6">
+            <h2 className="text-xl font-semibold mb-2">📁 {f}</h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              {cards
+                .filter((card) => card.folder === f)
+                .map((card) => (
+                  <div
+                    key={card.id}
+                    className="border rounded-xl p-2 bg-white shadow-sm"
+                  >
+                    <img
+                      src={card.image}
+                      alt={card.player}
+                      className="rounded mb-2 max-h-40 object-contain mx-auto"
+                    />
+                    <p className="text-sm font-bold">{card.player}</p>
+                    <p className="text-sm text-gray-600">
+                      {card.year} {card.brand}
+                    </p>
+                    <p className="text-sm text-green-600 font-semibold">
+                      {card.value}
+                    </p>
+                  </div>
+                ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
