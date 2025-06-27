@@ -1,0 +1,70 @@
+import React, { useState } from "react";
+
+export default function CardFlipUI() {
+  const [image, setImage] = useState(null);
+  const [preview, setPreview] = useState(null);
+  const [scanResult, setScanResult] = useState(null);
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImage(file);
+      setPreview(URL.createObjectURL(file));
+      setScanResult(null);
+    }
+  };
+
+  const handleScan = () => {
+    // Placeholder scan simulation
+    setTimeout(() => {
+      setScanResult({
+        player: "Patrick Mahomes",
+        year: "2022",
+        brand: "Prizm",
+        value: "$75 (raw)"
+      });
+    }, 1500);
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-6">
+      <div className="bg-white rounded-2xl shadow-xl p-8 max-w-lg w-full text-center">
+        <h1 className="text-2xl font-bold mb-4">CardFlip AI</h1>
+        <p className="text-gray-600 mb-6">Upload a sports card photo to scan its details.</p>
+
+        <input
+          type="file"
+          accept="image/*"
+          className="mb-4"
+          onChange={handleFileChange}
+        />
+
+        {preview && (
+          <img
+            src={preview}
+            alt="Preview"
+            className="rounded-lg mb-4 max-h-64 object-contain border"
+          />
+        )}
+
+        <button
+          onClick={handleScan}
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50"
+          disabled={!image}
+        >
+          Scan Card
+        </button>
+
+        {scanResult && (
+          <div className="mt-6 text-left">
+            <h2 className="text-lg font-semibold mb-2">Scan Result:</h2>
+            <p><strong>Player:</strong> {scanResult.player}</p>
+            <p><strong>Year:</strong> {scanResult.year}</p>
+            <p><strong>Brand:</strong> {scanResult.brand}</p>
+            <p><strong>Value:</strong> {scanResult.value}</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
